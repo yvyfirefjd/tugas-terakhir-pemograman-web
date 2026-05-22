@@ -8,7 +8,7 @@ const footerLinks = {
     links: [
       { to: "/hiragana",   label: "Hiragana" },
       { to: "/katakana",   label: "Katakana" },
-      { to: "/kanji",      label: "Kanji Dasar" },
+      { to: "/kanji",      label: "Daftar Kanji" },
       { to: "/percakapan", label: "Percakapan" },
       { to: "/tatabahasa", label: "Tata Bahasa" },
     ],
@@ -17,7 +17,7 @@ const footerLinks = {
     jp: "れんしゅう",
     label: "Latihan",
     links: [
-      { to: "/kuis",       label: "Kuis Harian" },
+      { to: "/kuis",       label: "Kuis" },
       { to: "/flashcard",  label: "Flash Card" },
     ],
   },
