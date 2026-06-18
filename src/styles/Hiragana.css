@@ -1,0 +1,364 @@
+:root {
+  --jp-red: #d94a38;
+  --bg-cream: #fffaf7;
+  --card-white: #ffffff;
+  --dark-text: #2a2a2a;
+  --muted-text: #666666;
+  --shadow-subtle: 0 10px 30px rgba(217, 74, 56, 0.05);
+  --radius-large: 20px;
+}
+
+.hira-page-wrapper {
+  background-color: var(--bg-cream);
+  min-height: 100vh;
+  color: var(--dark-text);
+  font-family: 'Inter', sans-serif;
+}
+
+.hira-hero {
+  position: relative;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #141414;
+  margin-bottom: 40px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.hira-hero::before {
+  content: "ひらがな";
+  position: absolute;
+  font-size: 10rem;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.02);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hira-hero h1 {
+  font-size: 2.8rem;
+  color: #ffffff !important;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.hira-hero p {
+  font-size: 1rem;
+  color: #888888 !important;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.hira-main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px 60px 20px;
+}
+
+.hira-intro-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 50px;
+}
+
+.hira-intro-card {
+  background: var(--card-white);
+  padding: 30px;
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.3s ease;
+}
+
+.hira-intro-card:hover {
+  transform: translateY(-5px);
+}
+
+.hira-intro-card h3 {
+  color: var(--jp-red);
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.hira-intro-card ul {
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.hira-workspace {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 30px;
+  margin-bottom: 60px;
+}
+
+.hira-filter-box input {
+  width: 100%;
+  padding: 15px 25px;
+  border-radius: var(--radius-large);
+  border: 2px solid rgba(217, 74, 56, 0.1);
+  outline: none;
+  font-size: 1rem;
+  margin-bottom: 25px;
+  box-shadow: var(--shadow-subtle);
+  transition: border-color 0.3s;
+}
+
+.hira-filter-box input:focus {
+  border-color: var(--jp-red);
+}
+
+.hira-alphabet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 12px;
+}
+
+.hira-item-card {
+  background: var(--card-white);
+  border-radius: 15px;
+  padding: 15px 10px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-subtle);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.hira-item-card:hover {
+  transform: scale(1.05);
+  border-color: rgba(217, 74, 56, 0.3);
+}
+
+.hira-item-card.active-item {
+  background: var(--jp-red);
+  border-color: var(--jp-red);
+}
+
+.hira-item-card.active-item .hira-char,
+.hira-item-card.active-item .hira-sub {
+  color: #ffffff;
+}
+
+.hira-char {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.hira-sub {
+  font-size: 0.85rem;
+  color: var(--muted-text);
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+.hira-sticky-detail {
+  position: sticky;
+  top: 30px;
+  background: var(--card-white);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-subtle);
+  padding: 35px 30px;
+  border-top: 5px solid var(--jp-red);
+}
+
+.hira-detail-header {
+  text-align: center;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.03);
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.hira-detail-header h2 {
+  font-size: 4.5rem;
+  margin: 0;
+  color: var(--jp-red);
+}
+
+.hira-detail-header span {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--muted-text);
+  letter-spacing: 2px;
+}
+
+.detail-row {
+  margin-bottom: 20px;
+}
+
+.detail-row strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted-text);
+  margin-bottom: 5px;
+}
+
+.detail-row p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.detail-row .jp-text {
+  color: var(--jp-red);
+  font-weight: 600;
+}
+
+.hira-study-tips {
+  margin-bottom: 60px;
+}
+
+.hira-study-tips h2 {
+  text-align: center;
+  margin-bottom: 35px;
+  position: relative;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.tip-card {
+  background: var(--card-white);
+  padding: 25px;
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-subtle);
+  transition: transform 0.3s;
+}
+
+.tip-card:hover {
+  transform: translateY(-5px);
+}
+
+.tip-card h4 {
+  margin-top: 0;
+  color: var(--jp-red);
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+.tip-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--muted-text);
+}
+
+.hira-quiz-container {
+  background: var(--card-white);
+  border-radius: var(--radius-large);
+  padding: 40px;
+  box-shadow: var(--shadow-subtle);
+  margin-bottom: 60px;
+}
+
+.hira-quiz-container h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+.quiz-card-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.quiz-target-char {
+  font-size: 5rem;
+  font-weight: 700;
+  color: var(--jp-red);
+  margin: 20px 0;
+}
+
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.quiz-option-btn {
+  background: var(--bg-cream);
+  border: 2px solid rgba(217, 74, 56, 0.1);
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.quiz-option-btn:hover {
+  background: var(--jp-red);
+  color: white;
+  border-color: var(--jp-red);
+}
+
+.quiz-option-btn.chosen {
+  background: #2a2a2a;
+  color: white;
+}
+
+.score-display {
+  font-size: 1.5rem;
+  margin: 20px 0;
+}
+
+.score-display span {
+  color: var(--jp-red);
+  font-weight: 700;
+  font-size: 2.2rem;
+}
+
+.hira-primary-btn {
+  background: var(--jp-red);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hira-motivation-footer {
+  background: #141414;
+  color: white;
+  border-radius: var(--radius-large);
+  padding: 50px 30px;
+  text-align: center;
+}
+
+.motivation-inner h3 {
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin-top: 0;
+  font-style: italic;
+}
+
+.motivation-inner p {
+  color: #888888;
+  max-width: 700px;
+  margin: 15px auto 0 auto;
+}
+
+@media (max-width: 900px) {
+  .hira-intro-section,
+  .hira-workspace,
+  .tips-grid {
+    grid-template-columns: 1fr;
+  }
+  .hira-sticky-detail {
+    position: static;
+  }
+}
