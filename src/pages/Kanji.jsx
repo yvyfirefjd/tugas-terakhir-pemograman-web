@@ -3,20 +3,27 @@ import axios from "axios";
 import "../styles/Kanji.css";
 
 const JLPT_LEVELS = [5, 4, 3, 2, 1];
-const BASE_URL = "https://kanjiapi.dev/v1";
+const API = "http://localhost:5000/api"; // ← backend Express + PostgreSQL
+
+// Bacaan on/kun disimpan sebagai teks dipisah koma di database,
+// contoh: "ニチ、ジツ" → diubah jadi array untuk ditampilkan per chip
+function splitReadings(str) {
+  if (!str) return [];
+  return str.split(/[、,]/).map((s) => s.trim()).filter(Boolean);
+}
 
 export default function Kanji() {
   // ── State ──────────────────────────────────────────────
-  const [level, setLevel]           = useState(5);
-  const [kanjiList, setKanjiList]   = useState([]);   // array of kanji characters
-  const [selected, setSelected]     = useState(null); // detail objek kanji yang dipilih
-  const [detail, setDetail]         = useState(null);
+  const [level, setLevel]             = useState(5);
+  const [kanjiList, setKanjiList]     = useState([]); // array objek kanji dari DB
+  const [selected, setSelected]       = useState(null); // id_kanji yang dipilih
+  const [detail, setDetail]           = useState(null);
   const [loadingList, setLoadingList] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [errorList, setErrorList]   = useState(null);
+  const [errorList, setErrorList]     = useState(null);
   const [errorDetail, setErrorDetail] = useState(null);
 
-  // ── Fetch list kanji berdasarkan level JLPT ────────────
+  // ── Fetch daftar kanji setiap level berubah ────────────
   useEffect(() => {
     setKanjiList([]);
     setSelected(null);
@@ -25,26 +32,28 @@ export default function Kanji() {
     setLoadingList(true);
 
     axios
-      .get(`${BASE_URL}/kanji/jlpt-${level}`)
+      .get(`${API}/kanji`, { params: { level: `N${level}` } })
       .then((res) => setKanjiList(res.data))
-      .catch(() => setErrorList("Gagal memuat daftar kanji. Coba lagi."))
+      .catch(() =>
+        setErrorList("Gagal memuat daftar kanji. Pastikan server backend (node server.js) berjalan.")
+      )
       .finally(() => setLoadingList(false));
-  }, [level]); // re-fetch setiap level berubah
+  }, [level]);
 
-  // ── Fetch detail satu kanji ────────────────────────────
-  const handleSelectKanji = (char) => {
-    if (selected === char) {
+  // ── Fetch detail satu kanji by id ───────────────────────
+  const handleSelectKanji = (item) => {
+    if (selected === item.id_kanji) {
       setSelected(null);
       setDetail(null);
       return;
     }
-    setSelected(char);
+    setSelected(item.id_kanji);
     setDetail(null);
     setErrorDetail(null);
     setLoadingDetail(true);
 
     axios
-      .get(`${BASE_URL}/kanji/${encodeURIComponent(char)}`)
+      .get(`${API}/kanji/${item.id_kanji}`)
       .then((res) => setDetail(res.data))
       .catch(() => setErrorDetail("Gagal memuat detail kanji."))
       .finally(() => setLoadingDetail(false));
@@ -95,6 +104,13 @@ export default function Kanji() {
           {/* Error list */}
           {errorList && <div className="kanji-error">{errorList}</div>}
 
+          {/* Kosong (belum ada data di DB untuk level ini) */}
+          {!loadingList && !errorList && kanjiList.length === 0 && (
+            <div className="kanji-error" style={{ background: "#f5f5f5", borderColor: "#ddd", color: "#888" }}>
+              Belum ada kanji untuk level N{level} di database.
+            </div>
+          )}
+
           {/* Info jumlah */}
           {!loadingList && !errorList && kanjiList.length > 0 && (
             <p className="kanji-count">
@@ -104,14 +120,14 @@ export default function Kanji() {
 
           {/* Grid */}
           <div className="kanji-grid">
-            {kanjiList.map((char) => (
+            {kanjiList.map((item) => (
               <button
-                key={char}
-                className={`kanji-card ${selected === char ? "kanji-card--active" : ""}`}
-                onClick={() => handleSelectKanji(char)}
-                title={char}
+                key={item.id_kanji}
+                className={`kanji-card ${selected === item.id_kanji ? "kanji-card--active" : ""}`}
+                onClick={() => handleSelectKanji(item)}
+                title={item.karakter}
               >
-                {char}
+                {item.karakter}
               </button>
             ))}
           </div>
@@ -134,30 +150,27 @@ export default function Kanji() {
             {detail && !loadingDetail && (
               <>
                 {/* Karakter besar */}
-                <div className="kanji-detail__char">{detail.kanji}</div>
+                <div className="kanji-detail__char">{detail.karakter}</div>
 
-                {/* Badge level */}
+                {/* Badge level & stroke */}
                 <div className="kanji-detail__badges">
-                  {detail.jlpt && (
-                    <span className={`kanji-badge kanji-badge--n${detail.jlpt}`}>
-                      JLPT N{detail.jlpt}
+                  {detail.level_nama && (
+                    <span className={`kanji-badge kanji-badge--${detail.level_nama.toLowerCase()}`}>
+                      JLPT {detail.level_nama}
                     </span>
                   )}
-                  {detail.grade && (
-                    <span className="kanji-badge kanji-badge--grade">
-                      Grade {detail.grade}
+                  {detail.stroke_count && (
+                    <span className="kanji-badge kanji-badge--stroke">
+                      {detail.stroke_count} stroke
                     </span>
                   )}
-                  <span className="kanji-badge kanji-badge--stroke">
-                    {detail.stroke_count} stroke
-                  </span>
                 </div>
 
                 {/* Arti */}
                 <div className="kanji-detail__section">
                   <h3 className="kanji-detail__label">Arti</h3>
                   <p className="kanji-detail__meanings">
-                    {detail.meanings?.join(", ") || "—"}
+                    {detail.arti || "—"}
                   </p>
                 </div>
 
@@ -165,8 +178,8 @@ export default function Kanji() {
                 <div className="kanji-detail__section">
                   <h3 className="kanji-detail__label">Bacaan On <span>音読み</span></h3>
                   <div className="kanji-detail__readings">
-                    {detail.on_readings?.length > 0
-                      ? detail.on_readings.map((r) => (
+                    {splitReadings(detail.onyomi).length > 0
+                      ? splitReadings(detail.onyomi).map((r) => (
                           <span key={r} className="kanji-reading kanji-reading--on">{r}</span>
                         ))
                       : <span className="kanji-reading__empty">—</span>}
@@ -177,29 +190,17 @@ export default function Kanji() {
                 <div className="kanji-detail__section">
                   <h3 className="kanji-detail__label">Bacaan Kun <span>訓読み</span></h3>
                   <div className="kanji-detail__readings">
-                    {detail.kun_readings?.length > 0
-                      ? detail.kun_readings.map((r) => (
+                    {splitReadings(detail.kunyomi).length > 0
+                      ? splitReadings(detail.kunyomi).map((r) => (
                           <span key={r} className="kanji-reading kanji-reading--kun">{r}</span>
                         ))
                       : <span className="kanji-reading__empty">—</span>}
                   </div>
                 </div>
 
-                {/* Name readings */}
-                {detail.name_readings?.length > 0 && (
-                  <div className="kanji-detail__section">
-                    <h3 className="kanji-detail__label">Bacaan Nama <span>名前</span></h3>
-                    <div className="kanji-detail__readings">
-                      {detail.name_readings.map((r) => (
-                        <span key={r} className="kanji-reading kanji-reading--name">{r}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Unicode */}
+                {/* ID di database (pengganti unicode) */}
                 <div className="kanji-detail__footer">
-                  Unicode: U+{detail.unicode?.toUpperCase()}
+                  ID Database: #{detail.id_kanji}
                 </div>
               </>
             )}

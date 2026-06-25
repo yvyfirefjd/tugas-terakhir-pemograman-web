@@ -3,206 +3,112 @@ import axios from "axios";
 import "../styles/Flashcard.css";
 
 const JLPT_LEVELS = [5, 4, 3, 2, 1];
-const BASE_URL = "https://kanjiapi.dev/v1";
+const API = "http://localhost:5000/api"; // ← backend Express + PostgreSQL
 
-const shuffleArray = (arr) => {
-  const newArr = [...arr];
-  for (let i = newArr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-  }
-  return newArr;
-};
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+// Bacaan on/kun disimpan sebagai teks dipisah koma di database
+function splitReadings(str) {
+  if (!str) return [];
+  return str.split(/[、,]/).map((s) => s.trim()).filter(Boolean);
+}
 
 export default function Flashcard() {
-  const [level, setLevel] = useState(5);
-  const [kanjiList, setKanjiList] = useState([]);
-  const [sessionCards, setSessionCards] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-  
-  const [knownList, setKnownList] = useState([]);
-  const [unknownList, setUnknownList] = useState([]);
-  const [isFinished, setIsFinished] = useState(false);
-
+  const [level, setLevel]           = useState(5);
+  const [kanjiList, setKanjiList]   = useState([]); // data lengkap dari API
+  const [deck, setDeck]             = useState([]); // versi diacak
+  const [index, setIndex]           = useState(0);
+  const [flipped, setFlipped]       = useState(false);
   const [loadingList, setLoadingList] = useState(false);
-  const [loadingDetail, setLoadingDetail] = useState(false);
-  const [errorList, setErrorList] = useState(null);
+  const [error, setError]           = useState(null);
+  const [known, setKnown]           = useState(new Set());
+  const [unknown, setUnknown]       = useState(new Set());
+  const [done, setDone]             = useState(false);
 
-  const [detailsCache, setDetailsCache] = useState({});
-
-  // Fetch Kanji list on level change
+  // ── Fetch data kanji (sekali per level) ────────────────────
   useEffect(() => {
-    setLoadingList(true);
-    setErrorList(null);
     setKanjiList([]);
-    setSessionCards([]);
-    setCurrentIndex(0);
-    setIsFlipped(false);
-    setKnownList([]);
-    setUnknownList([]);
-    setIsFinished(false);
+    setDeck([]);
+    setIndex(0);
+    setFlipped(false);
+    setKnown(new Set());
+    setUnknown(new Set());
+    setDone(false);
+    setError(null);
+    setLoadingList(true);
 
     axios
-      .get(`${BASE_URL}/kanji/jlpt-${level}`)
+      .get(`${API}/kanji`, { params: { level: `N${level}` } })
       .then((res) => {
-        const allKanji = res.data;
-        setKanjiList(allKanji);
-        if (allKanji.length > 0) {
-          const shuffled = shuffleArray(allKanji);
-          setSessionCards(shuffled.slice(0, 10));
-        }
+        setKanjiList(res.data);
+        setDeck(shuffle(res.data));
       })
-      .catch((err) => {
-        console.error("Gagal memuat daftar kanji:", err);
-        setErrorList("Gagal memuat daftar kanji. Silakan coba lagi.");
-      })
-      .finally(() => {
-        setLoadingList(false);
-      });
+      .catch(() =>
+        setError("Gagal memuat kanji. Pastikan server backend (node server.js) berjalan.")
+      )
+      .finally(() => setLoadingList(false));
   }, [level]);
 
-  // Fetch current card detail
-  useEffect(() => {
-    if (sessionCards.length === 0 || currentIndex >= sessionCards.length) return;
-    const char = sessionCards[currentIndex];
-
-    if (detailsCache[char]) return;
-
-    setLoadingDetail(true);
-    axios
-      .get(`${BASE_URL}/kanji/${encodeURIComponent(char)}`)
-      .then((res) => {
-        setDetailsCache((prev) => ({ ...prev, [char]: res.data }));
-      })
-      .catch((err) => {
-        console.error("Gagal memuat detail kanji:", err);
-      })
-      .finally(() => {
-        setLoadingDetail(false);
-      });
-  }, [currentIndex, sessionCards, detailsCache]);
-
-  // Prefetch next card detail
-  useEffect(() => {
-    if (sessionCards.length === 0) return;
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < sessionCards.length) {
-      const nextChar = sessionCards[nextIndex];
-      if (detailsCache[nextChar]) return;
-
-      axios
-        .get(`${BASE_URL}/kanji/${encodeURIComponent(nextChar)}`)
-        .then((res) => {
-          setDetailsCache((prev) => ({ ...prev, [nextChar]: res.data }));
-        })
-        .catch(() => {});
-    }
-  }, [currentIndex, sessionCards, detailsCache]);
-
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setIsFlipped(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => prev - 1);
-      }, 200);
-    }
+  // ── Navigasi ────────────────────────────────────────────────
+  const goPrev = () => {
+    setFlipped(false);
+    setIndex((i) => Math.max(0, i - 1));
   };
 
-  const handleNext = () => {
-    if (currentIndex + 1 < sessionCards.length) {
-      setIsFlipped(false);
-      setTimeout(() => {
-        setCurrentIndex((prev) => prev + 1);
-      }, 200);
+  const goNext = () => {
+    if (index >= deck.length - 1) {
+      setDone(true);
     } else {
-      setIsFinished(true);
+      setFlipped(false);
+      setIndex((i) => i + 1);
     }
   };
 
-  const handleVerdict = (known) => {
-    const char = sessionCards[currentIndex];
-    if (known) {
-      setKnownList((prev) => [...prev.filter((c) => c !== char), char]);
-      setUnknownList((prev) => prev.filter((c) => c !== char));
-    } else {
-      setUnknownList((prev) => [...prev.filter((c) => c !== char), char]);
-      setKnownList((prev) => prev.filter((c) => c !== char));
-    }
-
-    setIsFlipped(false);
-    setTimeout(() => {
-      if (currentIndex + 1 < sessionCards.length) {
-        setCurrentIndex((prev) => prev + 1);
-      } else {
-        setIsFinished(true);
-      }
-    }, 200);
+  const markKnown = () => {
+    setKnown((prev) => new Set([...prev, index]));
+    setUnknown((prev) => { const s = new Set(prev); s.delete(index); return s; });
+    goNext();
   };
 
-  const handleRestart = () => {
-    if (kanjiList.length > 0) {
-      const shuffled = shuffleArray(kanjiList);
-      setSessionCards(shuffled.slice(0, 10));
-      setCurrentIndex(0);
-      setIsFlipped(false);
-      setKnownList([]);
-      setUnknownList([]);
-      setIsFinished(false);
-    }
+  const markUnknown = () => {
+    setUnknown((prev) => new Set([...prev, index]));
+    setKnown((prev) => { const s = new Set(prev); s.delete(index); return s; });
+    goNext();
   };
 
-  const handleShuffleSession = () => {
-    if (sessionCards.length > 0) {
-      setSessionCards(shuffleArray(sessionCards));
-      setCurrentIndex(0);
-      setIsFlipped(false);
-    }
+  const reshuffle = () => {
+    setDeck(shuffle(kanjiList));
+    setIndex(0);
+    setFlipped(false);
+    setKnown(new Set());
+    setUnknown(new Set());
+    setDone(false);
   };
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (isFinished || sessionCards.length === 0) return;
+  const reviewUnknown = () => {
+    const unknownCards = deck.filter((_, i) => unknown.has(i));
+    if (!unknownCards.length) return;
+    setDeck(shuffle(unknownCards));
+    setIndex(0);
+    setFlipped(false);
+    setKnown(new Set());
+    setUnknown(new Set());
+    setDone(false);
+  };
 
-      if (e.code === "Space") {
-        e.preventDefault();
-        setIsFlipped((prev) => !prev);
-      } else if (e.key === "1" || e.code === "Digit1") {
-        if (isFlipped) {
-          handleVerdict(false);
-        }
-      } else if (e.key === "2" || e.code === "Digit2") {
-        if (isFlipped) {
-          handleVerdict(true);
-        }
-      } else if (e.key === "ArrowLeft") {
-        handlePrev();
-      } else if (e.key === "ArrowRight") {
-        handleNext();
-      }
-    };
+  const current  = deck[index];
+  const progress = deck.length > 0 ? (index / deck.length) * 100 : 0;
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isFlipped, currentIndex, sessionCards, isFinished]);
-
-  const currentKanji = sessionCards[currentIndex];
-  const currentDetail = detailsCache[currentKanji];
-
+  // ── Render ──────────────────────────────────────────────────
   return (
     <div className="fc-page">
-      {/* Hero Header */}
+      {/* Hero */}
       <div className="fc-hero">
-        <div className="fc-hero__deco">暗記</div>
-        <h1 className="fc-hero__title">Flashcard Kanji</h1>
-        <p className="fc-hero__sub">
-          Tingkatkan hafalan Kanji Jepang Anda dengan metode Flashcard interaktif
-        </p>
-
-        {/* JLPT Filter */}
+        <div className="fc-hero__deco">カード</div>
+        <h1 className="fc-hero__title">Flash Card Kanji</h1>
+        <p className="fc-hero__sub">Klik kartu untuk membalik dan lihat arti serta bacaan</p>
         <div className="fc-filter">
           {JLPT_LEVELS.map((n) => (
             <button
@@ -216,178 +122,153 @@ export default function Flashcard() {
         </div>
       </div>
 
-      {/* Main Study Zone */}
       <div className="fc-main">
-        {loadingList ? (
+        {/* Loading */}
+        {loadingList && (
           <div className="fc-status">
-            <div className="fc-spinner fc-spinner--lg" />
-            <span>Memuat daftar kanji JLPT N{level}...</span>
+            <div className="fc-spinner" />
+            <span>Memuat kanji N{level}...</span>
           </div>
-        ) : errorList ? (
-          <div className="fc-status">{errorList}</div>
-        ) : isFinished ? (
+        )}
+
+        {/* Error */}
+        {error && !loadingList && (
+          <div className="fc-status" style={{ color: "#c0392b" }}>
+            {error}
+          </div>
+        )}
+
+        {/* Kosong */}
+        {!loadingList && !error && deck.length === 0 && (
+          <div className="fc-status">Belum ada kanji untuk level N{level} di database.</div>
+        )}
+
+        {/* Selesai semua kartu */}
+        {done && (
           <div className="fc-done">
             <div className="fc-done__emoji">🎉</div>
-            <h2>Sesi Belajar Selesai!</h2>
+            <h2>Kartu Habis!</h2>
             <div className="fc-done__stats">
               <div className="fc-done__stat fc-done__stat--known">
-                <span className="fc-done__stat-num">{knownList.length}</span>
-                <span>Hapal</span>
+                <span className="fc-done__stat-num">{known.size}</span>
+                <span>Sudah Tahu</span>
               </div>
               <div className="fc-done__stat fc-done__stat--unknown">
-                <span className="fc-done__stat-num">{unknownList.length}</span>
-                <span>Belum Hapal</span>
+                <span className="fc-done__stat-num">{unknown.size}</span>
+                <span>Belum Tahu</span>
               </div>
             </div>
             <div className="fc-done__actions">
-              <button className="fc-action-btn fc-action-btn--primary" onClick={handleRestart}>
-                Ulangi Sesi Ini
+              <button className="fc-action-btn fc-action-btn--primary" onClick={reshuffle}>
+                ⇄ Acak Ulang Semua
               </button>
-              <button
-                className="fc-action-btn fc-action-btn--secondary"
-                onClick={() => {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                }}
-              >
-                Pilih Level Lain
-              </button>
+              {unknown.size > 0 && (
+                <button className="fc-action-btn fc-action-btn--secondary" onClick={reviewUnknown}>
+                  ✗ Review yang Belum Tahu ({unknown.size})
+                </button>
+              )}
             </div>
           </div>
-        ) : sessionCards.length > 0 ? (
+        )}
+
+        {/* Main flashcard */}
+        {!loadingList && !error && current && !done && (
           <>
-            {/* Progress Bar */}
+            {/* Progress bar */}
             <div className="fc-progress-wrap">
               <div className="fc-progress-bar">
-                <div
-                  className="fc-progress-fill"
-                  style={{ width: `${(currentIndex / sessionCards.length) * 100}%` }}
-                />
+                <div className="fc-progress-fill" style={{ width: `${progress}%` }} />
               </div>
               <div className="fc-progress-meta">
-                <span>
-                  Progres: <strong>{currentIndex + 1}</strong> <small>/ {sessionCards.length}</small>
-                </span>
+                <span>{index + 1} <small>/ {deck.length}</small></span>
                 <div className="fc-progress-tags">
-                  <span className="fc-tag fc-tag--known">Hapal: {knownList.length}</span>
-                  <span className="fc-tag fc-tag--unknown">Belum: {unknownList.length}</span>
+                  <span className="fc-tag fc-tag--known">✓ {known.size}</span>
+                  <span className="fc-tag fc-tag--unknown">✗ {unknown.size}</span>
                 </div>
               </div>
             </div>
 
-            {/* Flashcard (3D Flip) */}
-            <div className="fc-card-scene" onClick={() => setIsFlipped(!isFlipped)}>
-              <div className={`fc-card ${isFlipped ? "fc-card--flipped" : ""}`}>
-                {/* Front Side */}
+            {/* Kartu */}
+            <div className="fc-card-scene">
+              <div
+                className={`fc-card ${flipped ? "fc-card--flipped" : ""}`}
+                onClick={() => setFlipped((f) => !f)}
+                role="button"
+                aria-label="Klik untuk membalik kartu"
+              >
+                {/* Depan */}
                 <div className="fc-card__face fc-card__front">
-                  <span className="fc-card__level-badge">JLPT N{level}</span>
-                  <div className="fc-card__char">{currentKanji}</div>
-                  <span className="fc-card__hint">Klik kartu atau tekan Spasi untuk melihat arti</span>
+                  <div className="fc-card__level-badge">{current.level_nama || `N${level}`}</div>
+                  <div className="fc-card__char">{current.karakter}</div>
+                  <div className="fc-card__hint">
+                    <span>Klik untuk melihat jawaban</span>
+                  </div>
                 </div>
 
-                {/* Back Side */}
+                {/* Belakang */}
                 <div className="fc-card__face fc-card__back">
-                  {loadingDetail || !currentDetail ? (
-                    <div className="fc-status">
-                      <div className="fc-spinner" style={{ borderTopColor: "#fff" }} />
-                      <span style={{ color: "#fff" }}>Memuat detail...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <span className="fc-card__level-badge">JLPT N{level}</span>
-                      <div className="fc-card__char fc-card__char--sm">{currentDetail.kanji}</div>
-                      <div className="fc-card__meanings">
-                        {currentDetail.meanings?.join(", ") || "—"}
+                  <div className="fc-card__char fc-card__char--sm">{current.karakter}</div>
+                  <div className="fc-card__meanings">{current.arti}</div>
+                  <div className="fc-card__divider" />
+                  <div className="fc-card__readings">
+                    {splitReadings(current.onyomi).length > 0 && (
+                      <div className="fc-card__reading-row">
+                        <span className="fc-card__reading-label">音</span>
+                        <span className="fc-card__reading-val fc-card__reading-val--on">
+                          {splitReadings(current.onyomi).join("　")}
+                        </span>
                       </div>
-                      <div className="fc-card__divider" />
-                      <div className="fc-card__readings">
-                        <div className="fc-card__reading-row">
-                          <span className="fc-card__reading-label">音</span>
-                          <span className="fc-card__reading-val fc-card__reading-val--on">
-                            {currentDetail.on_readings?.join(", ") || "—"}
-                          </span>
-                        </div>
-                        <div className="fc-card__reading-row">
-                          <span className="fc-card__reading-label">訓</span>
-                          <span className="fc-card__reading-val fc-card__reading-val--kun">
-                            {currentDetail.kun_readings?.join(", ") || "—"}
-                          </span>
-                        </div>
+                    )}
+                    {splitReadings(current.kunyomi).length > 0 && (
+                      <div className="fc-card__reading-row">
+                        <span className="fc-card__reading-label">訓</span>
+                        <span className="fc-card__reading-val fc-card__reading-val--kun">
+                          {splitReadings(current.kunyomi).join("　")}
+                        </span>
                       </div>
-                      <div className="fc-card__stroke">
-                        {currentDetail.stroke_count} stroke
-                      </div>
-                    </>
+                    )}
+                  </div>
+                  {current.stroke_count && (
+                    <div className="fc-card__stroke">{current.stroke_count} stroke</div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Controls */}
+            {/* Tombol aksi */}
             <div className="fc-controls">
-              <button
-                className="fc-nav-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handlePrev();
-                }}
-                disabled={currentIndex === 0}
-                title="Sebelumnya (←)"
-              >
+              <button className="fc-nav-btn" onClick={goPrev} disabled={index === 0}>
                 ←
               </button>
 
-              <div className="fc-verdict-btns" onClick={(e) => e.stopPropagation()}>
-                {isFlipped ? (
-                  <>
-                    <button
-                      className="fc-verdict fc-verdict--unknown"
-                      onClick={() => handleVerdict(false)}
-                      title="Belum Hapal (Tekan 1)"
-                    >
-                      <span>Belum Hapal</span>
-                      <small>Tekan 1</small>
-                    </button>
-                    <button
-                      className="fc-verdict fc-verdict--known"
-                      onClick={() => handleVerdict(true)}
-                      title="Hapal (Tekan 2)"
-                    >
-                      <span>Hapal</span>
-                      <small>Tekan 2</small>
-                    </button>
-                  </>
-                ) : (
-                  <button className="fc-flip-btn" onClick={() => setIsFlipped(true)}>
-                    Buka Arti
+              {flipped ? (
+                <div className="fc-verdict-btns">
+                  <button className="fc-verdict fc-verdict--unknown" onClick={markUnknown}>
+                    ✗<span>Belum Tahu</span>
                   </button>
-                )}
-              </div>
+                  <button className="fc-verdict fc-verdict--known" onClick={markKnown}>
+                    ✓<span>Sudah Tahu</span>
+                  </button>
+                </div>
+              ) : (
+                <button className="fc-flip-btn" onClick={() => setFlipped(true)}>
+                  Balik Kartu ↑
+                </button>
+              )}
 
               <button
                 className="fc-nav-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleNext();
-                }}
-                title="Selanjutnya (→)"
+                onClick={goNext}
+                disabled={index >= deck.length - 1 && !done}
               >
                 →
               </button>
             </div>
 
-            {/* Shuffle Button */}
-            <button
-              className="fc-shuffle-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleShuffleSession();
-              }}
-            >
-              🔄 Acak Urutan Kartu Sesi
+            <button className="fc-shuffle-btn" onClick={reshuffle}>
+              ⇄ Acak Ulang
             </button>
           </>
-        ) : (
-          <div className="fc-status">Tidak ada kanji yang ditemukan untuk level ini.</div>
         )}
       </div>
     </div>

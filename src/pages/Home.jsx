@@ -36,14 +36,14 @@ const Home = () => {
     { id: 3, category: 'materi', title: "Katakana", path: "/katakana", desc: "Pelajari huruf untuk penulisan kata serapan asing." },   
     { id: 4, category: 'materi', title: "Grammar dasar Bahasa jepang", path: "/tata-bahasa", desc: "Struktur kalimat dasar dan penggunaan partikel." },
     { id: 5, category: 'materi', title: "Belajar partikel Bahasa jepang", path: "/partikel", desc: "Partikel dasar bahasa Jepang"},
-    { id: 6, category: 'materi', title: "Penjelasan awal belajar kanji", path: "/awalkanji", desc: "Persiapan belajar kanji"},
+    { id: 6, category: 'materi', title: "Penjelasan awal belajar kanji", path: "/kanjiHome", desc: "Persiapan belajar kanji"},
     { id: 7, category: 'materi', title: "Daftar Kanji", path: "/kanji", desc: "Daftar karakter kanji N5-N1."},
     { id: 8, category: 'materi', title: "Flashcard Kanji", path: "/flashcard", desc: "Flashcard karakter kanji N5-N1."},
     { id: 9, category: 'materi', title: "Kuis Kanji", path: "/kuis", desc: "Kuis karakter kanji N5-N1."},
     { id: 10, category: 'blog', title: "Keuntungan Belajar Bahasa Jepang", path: "/benefit", desc: "Kenapa Belajar Bahasa Jepang." },
     { id: 11, category: 'blog', title: "Rekomendasi buku sumber daya belajar Bahasa jepang", path: "/buku", desc: "Daftar buku belajar bahasa Jepang."},
     { id: 12, category: 'blog', title: "Rekomendasi platform online sumber daya belajar", path: "/platform", desc: "Platform belajar bahasa Jepang."},
-    { id: 13, category: 'blog', title: "Artikel Budaya Populer di Jepang", path: "/budaya", desc: "Budaya popular dan menarik di Jepang." },
+    { id: 13, category: 'blog', title: "Budaya & Gaya Hidup", path: "/budaya", desc: "Budaya popular dan menarik di Jepang." },
     { id: 14, category: 'info', title: "About Us", path: "/about", desc: "Informasi mengenai anggota kita." },
   ];
 

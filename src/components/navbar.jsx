@@ -6,7 +6,7 @@ const navLinks = [
   { to: "/", label: "Mulai Belajar"},
   { to: "/hiragana", label: "Hiragana"},
   { to: "/katakana", label: "Katakana"},
-   { to: "/kanjiHome", label: "kanji"},
+  { to: "/kanjiHome", label: "kanji"},
   { to: "/kanji", label: "Daftar Kanji"},
   { to: "/kuis", label: "Kuis Kanji"},
   { to: "/flashcard", label: "Flashcard Kanji"},
