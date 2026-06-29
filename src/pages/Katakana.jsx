@@ -1,54 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../styles/Katakana.css";
 
-const KATAKANA_DATA = [
-  { kana: "ア", romaji: "a", contoh: "アメリカ (amerika)", arti: "Amerika" },
-  { kana: "イ", romaji: "i", contoh: "イギリス (igirisu)", arti: "Inggris" },
-  { kana: "ウ", romaji: "u", contoh: "ウサギ (usagi)", arti: "Kelinci" },
-  { kana: "エ", romaji: "e", contoh: "エアコン (eakon)", arti: "AC" },
-  { kana: "オ", romaji: "o", contoh: "オレンジ (orenji)", arti: "Jeruk" },
-  { kana: "カ", romaji: "ka", contoh: "カメラ (kamera)", arti: "Kamera" },
-  { kana: "キ", romaji: "ki", contoh: "ギター (gitaa)", arti: "Gitar" },
-  { kana: "ク", romaji: "ku", contoh: "クラス (kurasu)", arti: "Kelas" },
-  { kana: "ケ", romaji: "ke", contoh: "ケーキ (keeki)", arti: "Kue" },
-  { kana: "コ", romaji: "ko", contoh: "コイン (koin)", arti: "Koin" },
-  { kana: "サ", romaji: "sa", contoh: "サラダ (sarada)", arti: "Salad" },
-  { kana: "シ", romaji: "shi", contoh: "シャツ (shatsu)", arti: "Kemeja" },
-  { kana: "ス", romaji: "su", contoh: "スポーツ (supootsu)", arti: "Olahraga" },
-  { kana: "セ", romaji: "se", contoh: "セーター (seetaa)", arti: "Sweter" },
-  { kana: "ソ", romaji: "so", contoh: "ソファ (sofa)", arti: "Sofa" },
-  { kana: "タ", romaji: "ta", contoh: "タクシー (takushii)", arti: "Taksi" },
-  { kana: "チ", romaji: "chi", contoh: "チーム (chiimu)", arti: "Tim" },
-  { kana: "ツ", romaji: "tsu", contoh: "ツアー (tsuaa)", arti: "Tur" },
-  { kana: "テ", romaji: "te", contoh: "テスト (tesuto)", arti: "Ujian" },
-  { kana: "ト", romaji: "to", contoh: "トイレ (toire)", arti: "Toilet" },
-  { kana: "ナ", romaji: "na", contoh: "ナイフ (naifu)", arti: "Pisau" },
-  { kana: "ニ", romaji: "ni", contoh: "ニュース (nyuusu)", arti: "Berita" },
-  { kana: "ヌ", romaji: "nu", contoh: "ヌードル (nuudoru)", arti: "Mie" },
-  { kana: "ネ", romaji: "ne", contoh: "ネクタイ (nekutai)", arti: "Dasi" },
-  { kana: "ノ", romaji: "no", contoh: "ノート (nooto)", arti: "Buku Catatan" },
-  { kana: "ハ", romaji: "ha", contoh: "ハム (hamu)", arti: "Daging Ham" },
-  { kana: "ヒ", romaji: "hi", contoh: "ヒーロー (hiiroo)", arti: "Pahlawan" },
-  { kana: "フ", romaji: "fu", contoh: "フィルム (firumu)", arti: "Film" },
-  { kana: "ヘ", romaji: "he", contoh: "ヘリコプター (herikoputaa)", arti: "Helikopter" },
-  { kana: "ホ", romaji: "ho", contoh: "ホテル (hoteru)", arti: "Hotel" },
-  { kana: "マ", romaji: "ma", contoh: "マッチ (macchi)", arti: "Korek Api" },
-  { kana: "ミ", romaji: "mi", contoh: "ミルク (miruku)", arti: "Susu" },
-  { kana: "む", romaji: "mu", contoh: "ムービー (muubii)", arti: "Film" },
-  { kana: "メ", romaji: "me", contoh: "メーター (meetaa)", arti: "Meteran" },
-  { kana: "モ", romaji: "mo", contoh: "モデル (moderau)", arti: "Model" },
-  { kana: "ヤ", romaji: "ya", contoh: "ヤード (yaado)", arti: "Yar" },
-  { kana: "ユ", romaji: "yu", contoh: "ユニフォーム (yunifoomu)", arti: "Seragam" },
-  { kana: "よ", romaji: "yo", contoh: "ヨーグルト (yooguruto)", arti: "Yoghurt" },
-  { kana: "ラ", romaji: "ra", contoh: "ラジオ (rajio)", arti: "Radio" },
-  { kana: "リ", romaji: "ri", contoh: "リボン (ribon)", arti: "Pita" },
-  { kana: "ル", romaji: "ru", contoh: "ルール (ruuru)", arti: "Aturan" },
-  { kana: "レ", romaji: "re", contoh: "レストラン (resutoran)", arti: "Restoran" },
-  { kana: "ロ", romaji: "ro", contoh: "ロボット (robotto)", arti: "Robot" },
-  { kana: "ワ", romaji: "wa", contoh: "ワイン (wain)", arti: "Anggur/Wine" },
-  { kana: "ヲ", romaji: "wo", contoh: "ヲタ芸 (wotagei)", arti: "Tarian Otaku" },
-  { kana: "ン", romaji: "n", contoh: "ラーメン (raamen)", arti: "Ramen" }
-];
+const API = "http://localhost:5000/api"; // ← backend Express + PostgreSQL
 
 const LOAN_WORDS = [
   { word: "テレビ", romaji: "Terebi", origin: "Television", arti: "Televisi" },
@@ -56,28 +10,51 @@ const LOAN_WORDS = [
   { word: "コーヒー", romaji: "Koohii", origin: "Coffee", arti: "Kopi" },
   { word: "スマホ", romaji: "Sumaho", origin: "Smart Phone", arti: "Ponsel Pintar" },
   { word: "レストラン", romaji: "Resutoran", origin: "Restaurant", arti: "Restoran" },
-  { word: "パソコン", romaji: "Pasokon", origin: "Personal Computer", arti: "Komputer/Laptop" }
+  { word: "パソコン", romaji: "Pasokon", origin: "Personal Computer", arti: "Komputer/Laptop" },
 ];
 
+// Kuis sederhana tetap statis di frontend — bukan dari database
 const QUIZ_DATA = [
   { question: "エ", options: ["a", "i", "u", "e"], answer: "e" },
   { question: "ケ", options: ["ka", "ki", "ku", "ke"], answer: "ke" },
   { question: "サ", options: ["sa", "shi", "su", "se"], answer: "sa" },
   { question: "ホ", options: ["ha", "hi", "fu", "ho"], answer: "ho" },
-  { question: "ル", options: ["ra", "ri", "ru", "re"], answer: "ru" }
+  { question: "ル", options: ["ra", "ri", "ru", "re"], answer: "ru" },
 ];
 
 export default function Katakana() {
-  const [selected, setSelected] = useState(KATAKANA_DATA[0]);
-  const [search, setSearch] = useState("");
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [showResult, setShowResult] = useState(false);
+  // ── State data dari backend ────────────────────────────────
+  const [katakanaData, setKatakanaData] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
 
-  const filteredData = KATAKANA_DATA.filter(
+  // ── State UI ────────────────────────────────────────────────
+  const [selected, setSelected] = useState(null);
+  const [search, setSearch]     = useState("");
+
+  // ── State kuis ──────────────────────────────────────────────
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore]                     = useState(0);
+  const [showResult, setShowResult]           = useState(false);
+
+  // ── Fetch data katakana dari database ──────────────────────
+  useEffect(() => {
+    axios
+      .get(`${API}/katakana`)
+      .then((res) => {
+        setKatakanaData(res.data);
+        setSelected(res.data[0] || null);
+      })
+      .catch(() =>
+        setError("Gagal memuat data katakana. Pastikan server backend (node server.js) berjalan.")
+      )
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredData = katakanaData.filter(
     (item) =>
       item.romaji.toLowerCase().includes(search.toLowerCase()) ||
-      item.kana.includes(search)
+      item.karakter.includes(search)
   );
 
   const handleAnswer = (option) => {
@@ -118,37 +95,48 @@ export default function Katakana() {
               />
             </div>
 
-            <div className="kata-alphabet-grid">
-              {filteredData.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`kata-item-card ${selected.kana === item.kana ? "active-item" : ""}`}
-                  onClick={() => setSelected(item)}
-                >
-                  <div className="kata-char">{item.kana}</div>
-                  <div className="kata-sub">{item.romaji}</div>
-                </div>
-              ))}
-            </div>
+            {/* Loading */}
+            {loading && <p className="kata-status">Memuat data katakana...</p>}
+
+            {/* Error */}
+            {error && !loading && <p className="kata-status kata-status--error">{error}</p>}
+
+            {/* Grid */}
+            {!loading && !error && (
+              <div className="kata-alphabet-grid">
+                {filteredData.map((item) => (
+                  <div
+                    key={item.id_katakana}
+                    className={`kata-item-card ${selected?.id_katakana === item.id_katakana ? "active-item" : ""}`}
+                    onClick={() => setSelected(item)}
+                  >
+                    <div className="kata-char">{item.karakter}</div>
+                    <div className="kata-sub">{item.romaji}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="kata-right-panel">
-            <div className="kata-sticky-detail">
-              <div className="kata-detail-header">
-                <h2>{selected.kana}</h2>
-                <span>{selected.romaji.toUpperCase()}</span>
-              </div>
-              <div className="kata-detail-body">
-                <div className="detail-row">
-                  <strong>Contoh Kata Serapan:</strong>
-                  <p className="jp-text">{selected.contoh}</p>
+            {selected && (
+              <div className="kata-sticky-detail">
+                <div className="kata-detail-header">
+                  <h2>{selected.karakter}</h2>
+                  <span>{selected.romaji.toUpperCase()}</span>
                 </div>
-                <div className="detail-row">
-                  <strong>Arti Istilah:</strong>
-                  <p>{selected.arti}</p>
+                <div className="kata-detail-body">
+                  <div className="detail-row">
+                    <strong>Contoh Kata Serapan:</strong>
+                    <p className="jp-text">{selected.contoh}</p>
+                  </div>
+                  <div className="detail-row">
+                    <strong>Arti Istilah:</strong>
+                    <p>{selected.arti}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 

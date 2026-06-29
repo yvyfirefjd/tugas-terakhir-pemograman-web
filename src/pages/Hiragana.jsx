@@ -1,75 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../styles/Hiragana.css";
 
-const HIRAGANA_DATA = [
-  { kana: "あ", romaji: "a", pengucapan: "Seperti 'a' pada 'Ayah'", contoh: "あさ (asa)", arti: "Pagi" },
-  { kana: "い", romaji: "i", pengucapan: "Seperti 'i' pada 'Ibu'", contoh: "いぬ (inu)", arti: "Anjing" },
-  { kana: "う", romaji: "u", pengucapan: "Seperti 'u' pada 'Udang'", contoh: "うみ (umi)", arti: "Laut" },
-  { kana: "え", romaji: "e", pengucapan: "Seperti 'e' pada 'Ekor'", contoh: "えき (eki)", arti: "Stasiun" },
-  { kana: "お", romaji: "o", pengucapan: "Seperti 'o' pada 'Obat'", contoh: "おかね (okane)", arti: "Uang" },
-  { kana: "か", romaji: "ka", pengucapan: "K + A", contoh: "かさ (kasa)", arti: "Payung" },
-  { kana: "き", romaji: "ki", pengucapan: "K + I", contoh: "きっぷ (kippu)", arti: "Tiket" },
-  { kana: "く", romaji: "ku", pengucapan: "K + U", contoh: "くるま (kuruma)", arti: "Mobil" },
-  { kana: "け", romaji: "ke", pengucapan: "K + E", contoh: "けいさつ (keisatsu)", arti: "Polisi" },
-  { kana: "こ", romaji: "ko", pengucapan: "K + O", contoh: "こころ (kokoro)", arti: "Hati" },
-  { kana: "さ", romaji: "sa", pengucapan: "S + A", contoh: "さかな (sakana)", arti: "Ikan" },
-  { kana: "し", romaji: "shi", pengucapan: "Diucapkan 'Syi'", contoh: "しお (shio)", arti: "Garam" },
-  { kana: "す", romaji: "su", pengucapan: "S + U", contoh: "すし (sushi)", arti: "Sushi" },
-  { kana: "せ", romaji: "se", pengucapan: "S + E", contoh: "せんせい (sensei)", arti: "Guru" },
-  { kana: "そ", romaji: "so", pengucapan: "S + O", contoh: "そら (sora)", arti: "Langit" },
-  { kana: "た", romaji: "ta", pengucapan: "T + A", contoh: "たまご (tamago)", arti: "Telur" },
-  { kana: "ち", romaji: "chi", pengucapan: "Diucapkan 'Cyi'", contoh: "ちず (chizu)", arti: "Peta" },
-  { kana: "つ", romaji: "tsu", pengucapan: "Diucapkan 'Tsu'", contoh: "つくえ (tsukue)", arti: "Meja" },
-  { kana: "て", romaji: "te", pengucapan: "T + E", contoh: "てがみ (tegami)", arti: "Surat" },
-  { kana: "と", romaji: "to", pengucapan: "T + O", contoh: "ともだち (tomodachi)", arti: "Teman" },
-  { kana: "な", romaji: "na", pengucapan: "N + A", contoh: "なつ (natsu)", arti: "Musim Panas" },
-  { kana: "に", romaji: "ni", pengucapan: "N + I", contoh: "にく (niku)", arti: "Daging" },
-  { kana: "ぬ", romaji: "nu", pengucapan: "N + U", contoh: "ぬの (nuno)", arti: "Kain" },
-  { kana: "ね", romaji: "ne", pengucapan: "N + E", contoh: "ねこ (neko)", arti: "Kucing" },
-  { kana: "の", romaji: "no", pengucapan: "N + O", contoh: "のみもの (nomimono)", arti: "Minuman" },
-  { kana: "は", romaji: "ha", pengucapan: "H + A (Dibaca 'wa' jika partikel)", contoh: "はな (hana)", arti: "Bunga" },
-  { kana: "ひ", romaji: "hi", pengucapan: "H + I", contoh: "ひかり (hikari)", arti: "Cahaya" },
-  { kana: "ふ", romaji: "fu", pengucapan: "Antara 'fu' dan 'hu'", contoh: "ふね (fune)", arti: "Kapal" },
-  { kana: "へ", romaji: "he", pengucapan: "H + E (Dibaca 'e' jika partikel)", contoh: "へや (heya)", arti: "Kamar" },
-  { kana: "ほ", romaji: "ho", pengucapan: "H + O", contoh: "ほん (hon)", arti: "Buku" },
-  { kana: "ま", romaji: "ma", pengucapan: "M + A", contoh: "まち (machi)", arti: "Kota" },
-  { kana: "み", romaji: "mi", pengucapan: "M + I", contoh: "みず (mizu)", arti: "Air" },
-  { kana: "む", romaji: "mu", pengucapan: "M + U", contoh: "むし (mushi)", arti: "Serangga" },
-  { kana: "め", romaji: "me", pengucapan: "M + E", contoh: "めがね (megane)", arti: "Kacamata" },
-  { kana: "も", romaji: "mo", pengucapan: "M + O", contoh: "もり (mori)", arti: "Hutan" },
-  { kana: "や", romaji: "ya", pengucapan: "Y + A", contoh: "やま (yama)", arti: "Gunung" },
-  { kana: "ゆ", romaji: "yu", pengucapan: "Y + U", contoh: "ゆき (yuki)", arti: "Salju" },
-  { kana: "よ", romaji: "yo", pengucapan: "Y + O", contoh: "よる (yoru)", arti: "Malam" },
-  { kana: "ら", romaji: "ra", pengucapan: "R + A (Lidah agak bergetar)", contoh: "らいげつ (raigetsu)", arti: "Bulan Depan" },
-  { kana: "り", romaji: "ri", pengucapan: "R + I", contoh: "りんご (ringo)", arti: "Apel" },
-  { kana: "る", romaji: "ru", pengucapan: "R + U", contoh: "よる (yoru)", arti: "Malam" },
-  { kana: "れ", romaji: "re", pengucapan: "R + E", contoh: "れいぞうこ (reizouko)", arti: "Kulkas" },
-  { kana: "ろ", romaji: "ro", pengucapan: "R + O", contoh: "ろく (roku)", arti: "Enam" },
-  { kana: "わ", romaji: "wa", pengucapan: "W + A", contoh: "わたしたち (watashitachi)", arti: "Kami" },
-  { kana: "を", romaji: "wo", pengucapan: "Dibaca 'o', khusus partikel", contoh: "ほんをよむ (hon wo yomu)", arti: "Membaca buku" },
-  { kana: "ん", romaji: "n", pengucapan: "Konsonan penutup 'n/m/ng'", contoh: "にほん (nihon)", arti: "Jepang" }
-];
+const API = "http://localhost:5000/api"; // ← backend Express + PostgreSQL
 
+// Kuis sederhana tetap statis di frontend — bukan dari database,
+// karena ini hanya latihan ringan tebak romaji, bukan bagian dari
+// fitur Kuis Kanji (yang sudah pakai tabel quiz/pertanyaan/jawaban).
 const QUIZ_DATA = [
   { question: "あ", options: ["a", "i", "u", "e"], answer: "a" },
   { question: "き", options: ["ka", "ki", "ku", "ke"], answer: "ki" },
   { question: "し", options: ["si", "chi", "shi", "hi"], answer: "shi" },
   { question: "つ", options: ["tu", "tsu", "su", "chu"], answer: "tsu" },
-  { question: "ね", options: ["ne", "re", "wa", "nu"], answer: "ne" }
+  { question: "ね", options: ["ne", "re", "wa", "nu"], answer: "ne" },
 ];
 
 export default function Hiragana() {
-  const [selected, setSelected] = useState(HIRAGANA_DATA[0]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [selectedAnswer, setSelectedAnswer] = useState("");
+  // ── State data dari backend ────────────────────────────────
+  const [hiraganaData, setHiraganaData] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
 
-  const filteredData = HIRAGANA_DATA.filter(
+  // ── State UI ────────────────────────────────────────────────
+  const [selected, setSelected]     = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // ── State kuis ──────────────────────────────────────────────
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore]                     = useState(0);
+  const [showScore, setShowScore]              = useState(false);
+  const [selectedAnswer, setSelectedAnswer]    = useState("");
+
+  // ── Fetch data hiragana dari database ──────────────────────
+  useEffect(() => {
+    axios
+      .get(`${API}/hiragana`)
+      .then((res) => {
+        setHiraganaData(res.data);
+        setSelected(res.data[0] || null);
+      })
+      .catch(() =>
+        setError("Gagal memuat data hiragana. Pastikan server backend (node server.js) berjalan.")
+      )
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filteredData = hiraganaData.filter(
     (item) =>
       item.romaji.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.kana.includes(searchTerm)
+      item.karakter.includes(searchTerm)
   );
 
   const handleAnswerClick = (option) => {
@@ -129,41 +108,52 @@ export default function Hiragana() {
               />
             </div>
 
-            <div className="hira-alphabet-grid">
-              {filteredData.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`hira-item-card ${selected.kana === item.kana ? "active-item" : ""}`}
-                  onClick={() => setSelected(item)}
-                >
-                  <div className="hira-char">{item.kana}</div>
-                  <div className="hira-sub">{item.romaji}</div>
-                </div>
-              ))}
-            </div>
+            {/* Loading */}
+            {loading && <p className="hira-status">Memuat data hiragana...</p>}
+
+            {/* Error */}
+            {error && !loading && <p className="hira-status hira-status--error">{error}</p>}
+
+            {/* Grid */}
+            {!loading && !error && (
+              <div className="hira-alphabet-grid">
+                {filteredData.map((item) => (
+                  <div
+                    key={item.id_hiragana}
+                    className={`hira-item-card ${selected?.id_hiragana === item.id_hiragana ? "active-item" : ""}`}
+                    onClick={() => setSelected(item)}
+                  >
+                    <div className="hira-char">{item.karakter}</div>
+                    <div className="hira-sub">{item.romaji}</div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="hira-right-panel">
-            <div className="hira-sticky-detail">
-              <div className="hira-detail-header">
-                <h2>{selected.kana}</h2>
-                <span>{selected.romaji.toUpperCase()}</span>
+            {selected && (
+              <div className="hira-sticky-detail">
+                <div className="hira-detail-header">
+                  <h2>{selected.karakter}</h2>
+                  <span>{selected.romaji.toUpperCase()}</span>
+                </div>
+                <div className="hira-detail-body">
+                  <div className="detail-row">
+                    <strong>Cara Baca:</strong>
+                    <p>{selected.pengucapan}</p>
+                  </div>
+                  <div className="detail-row">
+                    <strong>Contoh Kata:</strong>
+                    <p className="jp-text">{selected.contoh}</p>
+                  </div>
+                  <div className="detail-row">
+                    <strong>Arti Kata:</strong>
+                    <p>{selected.arti}</p>
+                  </div>
+                </div>
               </div>
-              <div className="hira-detail-body">
-                <div className="detail-row">
-                  <strong>Cara Baca:</strong>
-                  <p>{selected.pengucapan}</p>
-                </div>
-                <div className="detail-row">
-                  <strong>Contoh Kata:</strong>
-                  <p className="jp-text">{selected.contoh}</p>
-                </div>
-                <div className="detail-row">
-                  <strong>Arti Kata:</strong>
-                  <p>{selected.arti}</p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 

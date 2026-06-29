@@ -103,20 +103,29 @@ app.post("/api/kanji", async (req, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────
-//  KANA
+//  HIRAGANA
 // ─────────────────────────────────────────────────────────────
-// GET /api/kana?type=hiragana  atau  ?type=katakana
-app.get("/api/kana", async (req, res) => {
+// GET /api/hiragana → semua karakter hiragana
+app.get("/api/hiragana", async (_req, res) => {
   try {
-    const { type } = req.query;
-    let query  = "SELECT * FROM kana";
-    const params = [];
-    if (type) {
-      params.push(type.toLowerCase());
-      query += " WHERE type = $1";
-    }
-    query += " ORDER BY id_kana";
-    const { rows } = await pool.query(query, params);
+    const { rows } = await pool.query(
+      "SELECT * FROM hiragana ORDER BY id_hiragana"
+    );
+    res.json(rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  KATAKANA
+// ─────────────────────────────────────────────────────────────
+// GET /api/katakana → semua karakter katakana
+app.get("/api/katakana", async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM katakana ORDER BY id_katakana"
+    );
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
