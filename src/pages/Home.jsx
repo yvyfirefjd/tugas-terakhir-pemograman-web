@@ -23,7 +23,7 @@ const Home = () => {
 
   const ruteLangkah = [
     { id: 'step1', title: "Hiragana & Katakana", desc: "Dasar sistem penulisan Jepang.", path: "/hiragana" },
-    { id: 'step2', title: "Grammar & Partikel", desc: "Struktur kalimat dan partikel dasar.", path: "/tata-bahasa" },
+    { id: 'step2', title: "Grammar & Partikel", desc: "Struktur kalimat dan partikel dasar.", path: "/grammar" },
     { id: 'step3', title: "Kanji Dasar N5", desc: "Karakter kanji tingkat pemula.", path: "/kanji" },
     { id: 'step4', title: "Kosakata N5", desc: "Kumpulan kata benda & kerja N5.", path: "/kosakata" },
     { id: 'step5', title: "Kalimat N5", desc: "Latihan merangkai kalimat lengkap.", path: "/kalimat" },
@@ -34,7 +34,7 @@ const Home = () => {
     { id: 1, category: 'materi', title: "Mengenal Tingkatan JLPT", path: "/jplt", desc: "Penjelasan tingkatan JPLT." },
     { id: 2, category: 'materi', title: "Hiragana", path: "/hiragana", desc: "Mulai belajar huruf dasar Jepang dari nol." },
     { id: 3, category: 'materi', title: "Katakana", path: "/katakana", desc: "Pelajari huruf untuk penulisan kata serapan asing." },   
-    { id: 4, category: 'materi', title: "Grammar dasar Bahasa jepang", path: "/tata-bahasa", desc: "Struktur kalimat dasar dan penggunaan partikel." },
+    { id: 4, category: 'materi', title: "Grammar dasar Bahasa jepang", path: "/grammar", desc: "Struktur kalimat dasar dan penggunaan partikel." },
     { id: 5, category: 'materi', title: "Belajar partikel Bahasa jepang", path: "/partikel", desc: "Partikel dasar bahasa Jepang"},
     { id: 6, category: 'materi', title: "Penjelasan awal belajar kanji", path: "/kanjiHome", desc: "Persiapan belajar kanji"},
     { id: 7, category: 'materi', title: "Daftar Kanji", path: "/kanji", desc: "Daftar karakter kanji N5-N1."},

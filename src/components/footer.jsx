@@ -9,7 +9,7 @@ const footerLinks = {
       { to: "/hiragana",   label: "Hiragana" },
       { to: "/katakana",   label: "Katakana" },
       { to: "/kanji",      label: "Daftar Kanji" },
-      { to: "/tata-bahasa", label: "Grammar" },
+      { to: "/grammar", label: "Grammar" },
       { to: "/partikel", label: "Partikel" },
     ],
   },

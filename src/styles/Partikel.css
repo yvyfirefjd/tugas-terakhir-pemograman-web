@@ -1,0 +1,59 @@
+.partikel-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.partikel-container h1 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 20px;
+}
+
+.partikel-container .intro {
+    text-align: center;
+    color: #555;
+    margin-bottom: 35px;
+    font-size: 18px;
+}
+
+.partikel-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,.1);
+}
+
+.partikel-container th {
+    background: #2e7d32;
+    color: white;
+}
+
+.partikel-container th,
+.partikel-container td {
+    border: 1px solid #ddd;
+    padding: 15px;
+    text-align: center;
+}
+
+.partikel-container tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+.note {
+    margin-top: 35px;
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.note h2 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.note li {
+    margin: 10px 0;
+}

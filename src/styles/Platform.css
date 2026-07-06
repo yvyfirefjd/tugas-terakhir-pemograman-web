@@ -1,0 +1,62 @@
+.platform-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.platform-container h1 {
+    text-align: center;
+    color: #d62828;
+    margin-bottom: 15px;
+}
+
+.platform-container .intro {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: #ffffff;
+    border-left: 6px solid #d62828;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    color: #d62828;
+    margin-bottom: 10px;
+}
+
+.card p {
+    color: #555;
+    line-height: 1.7;
+}
+
+.tips {
+    background: #fff3cd;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.tips h2 {
+    color: #856404;
+}
+
+.tips ul {
+    padding-left: 20px;
+}
+
+.tips li {
+    margin: 10px 0;
+}

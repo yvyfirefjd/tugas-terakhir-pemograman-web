@@ -11,6 +11,9 @@ import Kanji from "./pages/Kanji.jsx";
 import Flashcard from "./pages/Flashcard.jsx";
 import Kuis from "./pages/Kuis.jsx";
 import Budaya from "./pages/Budaya.jsx";
+import Grammar from "./pages/Grammar.jsx";
+import Partikel from "./pages/Partikel.jsx";
+import Platform from "./pages/Platform.jsx";
 
 
 export default function App() {
@@ -29,6 +32,9 @@ export default function App() {
           <Route path="/kuis" element={<Kuis />} />
           <Route path="/benefit" element={<Benefit />} />
           <Route path="/budaya" element={<Budaya />} />
+          <Route path="/grammar" element={<Grammar />} />
+          <Route path="/partikel" element={<Partikel />} />
+          <Route path="/platform" element={<Platform />} />
         </Routes>
       </main>
       <Footer />

@@ -9,8 +9,6 @@ DROP TABLE IF EXISTS quiz           CASCADE;
 DROP TABLE IF EXISTS kanji          CASCADE;
 DROP TABLE IF EXISTS hiragana       CASCADE;
 DROP TABLE IF EXISTS katakana       CASCADE;
-DROP TABLE IF EXISTS artikel        CASCADE;
-DROP TABLE IF EXISTS kategori       CASCADE;
 DROP TABLE IF EXISTS level_jlpt     CASCADE;
 
 -- ── level_jlpt ────────────────────────────────────────────────
@@ -28,23 +26,6 @@ CREATE TABLE kanji (
   onyomi        TEXT,                    -- contoh: 'ニチ、ジツ'
   kunyomi       TEXT,                    -- contoh: 'ひ、か'
   stroke_count  INT
-);
-
--- ── kategori ──────────────────────────────────────────────────
-CREATE TABLE kategori (
-  id_kategori   SERIAL PRIMARY KEY,
-  nama          VARCHAR(100) NOT NULL,
-  slug          VARCHAR(100) NOT NULL UNIQUE
-);
-
--- ── artikel ───────────────────────────────────────────────────
-CREATE TABLE artikel (
-  id_artikel    SERIAL PRIMARY KEY,
-  id_kategori   INT REFERENCES kategori(id_kategori) ON DELETE SET NULL,
-  judul         VARCHAR(255) NOT NULL,
-  slug          VARCHAR(255) NOT NULL UNIQUE,
-  body          TEXT,
-  gambar        VARCHAR(255)
 );
 
 -- ── quiz ──────────────────────────────────────────────────────
@@ -273,28 +254,6 @@ INSERT INTO katakana (karakter, romaji, contoh, arti) VALUES
 ('ワ','wa','ワイン (wain)','Anggur/Wine'),
 ('ヲ','wo','ヲタ芸 (wotagei)','Tarian Otaku'),
 ('ン','n','ラーメン (raamen)','Ramen');
-
--- ── Kategori Artikel ──────────────────────────────────────────
-INSERT INTO kategori (nama, slug) VALUES
-('Tata Bahasa','tata-bahasa'),
-('Kosakata','kosakata'),
-('Budaya Jepang','budaya'),
-('Tips Belajar','tips');
-
--- ── Artikel ───────────────────────────────────────────────────
-INSERT INTO artikel (id_kategori, judul, slug, body, gambar) VALUES
-(1,'Partikel は (wa) vs が (ga)','partikel-wa-vs-ga',
- 'Partikel は (wa) digunakan sebagai topik kalimat, sedangkan が (ga) digunakan sebagai subjek. Contoh: 私は学生です (Saya adalah pelajar). 猫が好きです (Suka kucing).',
- NULL),
-(2,'50 Kosakata Sehari-hari N5','kosakata-n5',
- 'Berikut adalah 50 kosakata paling penting untuk level N5: ありがとう (terima kasih), すみません (permisi/maaf), はい (ya), いいえ (tidak)...',
- NULL),
-(3,'Mengenal Hanami — Festival Bunga Sakura','hanami',
- 'Hanami (花見) adalah tradisi Jepang menikmati keindahan bunga sakura. Biasanya diadakan pada bulan Maret-April setiap tahunnya.',
- NULL),
-(4,'Cara Efektif Hafal Hiragana dalam 1 Minggu','hafal-hiragana',
- 'Tips menghafal hiragana: 1) Pelajari 5 huruf vokal dulu (あいうえお), 2) Gunakan flashcard, 3) Tulis berulang kali, 4) Baca manga sederhana.',
- NULL);
 
 -- ── Quiz N5 & N4 (id_jlpt sudah disesuaikan) ───────────────────
 INSERT INTO quiz (id_jlpt, judul) VALUES
