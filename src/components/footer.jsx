@@ -6,6 +6,7 @@ const footerLinks = {
     jp: "まなぶ",
     label: "Belajar",
     links: [
+      { to: "/jlpt",   label: "Mengenal tingkatan JLPT" },
       { to: "/hiragana",   label: "Hiragana" },
       { to: "/katakana",   label: "Katakana" },
       { to: "/kanji",      label: "Daftar Kanji" },
@@ -26,7 +27,7 @@ const footerLinks = {
     jp: "ブログ",
     label: "Blog",
     links: [
-      { to: "/benefit", label: "Keuntungan" },
+      { to: "/keuntungan", label: "Keuntungan" },
       { to: "/buku",   label: "Buku Belajar" },
       { to: "/platform", label: "Platform belajar" },
       { to: "/budaya", label: "Budaya Jepang" },

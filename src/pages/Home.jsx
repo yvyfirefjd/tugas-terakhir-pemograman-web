@@ -31,7 +31,7 @@ const Home = () => {
   ];
 
   const daftarKonten = [
-    { id: 1, category: 'materi', title: "Mengenal Tingkatan JLPT", path: "/jplt", desc: "Penjelasan tingkatan JPLT." },
+    { id: 1, category: 'materi', title: "Mengenal Tingkatan JLPT", path: "/jlpt", desc: "Penjelasan tingkatan JPLT." },
     { id: 2, category: 'materi', title: "Hiragana", path: "/hiragana", desc: "Mulai belajar huruf dasar Jepang dari nol." },
     { id: 3, category: 'materi', title: "Katakana", path: "/katakana", desc: "Pelajari huruf untuk penulisan kata serapan asing." },   
     { id: 4, category: 'materi', title: "Grammar dasar Bahasa jepang", path: "/grammar", desc: "Struktur kalimat dasar dan penggunaan partikel." },
@@ -40,7 +40,7 @@ const Home = () => {
     { id: 7, category: 'materi', title: "Daftar Kanji", path: "/kanji", desc: "Daftar karakter kanji N5-N1."},
     { id: 8, category: 'materi', title: "Flashcard Kanji", path: "/flashcard", desc: "Flashcard karakter kanji N5-N1."},
     { id: 9, category: 'materi', title: "Kuis Kanji", path: "/kuis", desc: "Kuis karakter kanji N5-N1."},
-    { id: 10, category: 'blog', title: "Keuntungan Belajar Bahasa Jepang", path: "/benefit", desc: "Kenapa Belajar Bahasa Jepang." },
+    { id: 10, category: 'blog', title: "Keuntungan Belajar Bahasa Jepang", path: "/keuntungan", desc: "Kenapa Belajar Bahasa Jepang." },
     { id: 11, category: 'blog', title: "Rekomendasi buku sumber daya belajar Bahasa jepang", path: "/buku", desc: "Daftar buku belajar bahasa Jepang."},
     { id: 12, category: 'blog', title: "Rekomendasi platform online sumber daya belajar", path: "/platform", desc: "Platform belajar bahasa Jepang."},
     { id: 13, category: 'blog', title: "Budaya & Gaya Hidup", path: "/budaya", desc: "Budaya popular dan menarik di Jepang." },

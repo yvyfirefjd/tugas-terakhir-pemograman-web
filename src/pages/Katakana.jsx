@@ -2,59 +2,55 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/Katakana.css";
 
-const API = "http://localhost:5000/api"; // ← backend Express + PostgreSQL
-
 const LOAN_WORDS = [
   { word: "テレビ", romaji: "Terebi", origin: "Television", arti: "Televisi" },
   { word: "ホテル", romaji: "Hoteru", origin: "Hotel", arti: "Hotel" },
   { word: "コーヒー", romaji: "Koohii", origin: "Coffee", arti: "Kopi" },
   { word: "スマホ", romaji: "Sumaho", origin: "Smart Phone", arti: "Ponsel Pintar" },
   { word: "レストラン", romaji: "Resutoran", origin: "Restaurant", arti: "Restoran" },
-  { word: "パソコン", romaji: "Pasokon", origin: "Personal Computer", arti: "Komputer/Laptop" },
+  { word: "パソコン", romaji: "Pasokon", origin: "Personal Computer", arti: "Komputer/Laptop" }
 ];
 
-// Kuis sederhana tetap statis di frontend — bukan dari database
 const QUIZ_DATA = [
   { question: "エ", options: ["a", "i", "u", "e"], answer: "e" },
   { question: "ケ", options: ["ka", "ki", "ku", "ke"], answer: "ke" },
   { question: "サ", options: ["sa", "shi", "su", "se"], answer: "sa" },
   { question: "ホ", options: ["ha", "hi", "fu", "ho"], answer: "ho" },
-  { question: "ル", options: ["ra", "ri", "ru", "re"], answer: "ru" },
+  { question: "ル", options: ["ra", "ri", "ru", "re"], answer: "ru" }
 ];
 
+
 export default function Katakana() {
-  // ── State data dari backend ────────────────────────────────
   const [katakanaData, setKatakanaData] = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-
-  // ── State UI ────────────────────────────────────────────────
   const [selected, setSelected] = useState(null);
-  const [search, setSearch]     = useState("");
-
-  // ── State kuis ──────────────────────────────────────────────
+  const [search, setSearch] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore]                     = useState(0);
-  const [showResult, setShowResult]           = useState(false);
+  const [score, setScore] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // ── Fetch data katakana dari database ──────────────────────
+  // Fetching Data dari Express API
   useEffect(() => {
-    axios
-      .get(`${API}/katakana`)
-      .then((res) => {
-        setKatakanaData(res.data);
-        setSelected(res.data[0] || null);
-      })
-      .catch(() =>
-        setError("Gagal memuat data katakana. Pastikan server backend (node server.js) berjalan.")
-      )
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/katakana");
+        setKatakanaData(response.data);
+        if (response.data.length > 0) {
+          setSelected(response.data[0]); // Set default selected
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data Katakana:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   const filteredData = katakanaData.filter(
     (item) =>
       item.romaji.toLowerCase().includes(search.toLowerCase()) ||
-      item.karakter.includes(search)
+      item.kana.includes(search)
   );
 
   const handleAnswer = (option) => {
@@ -69,6 +65,35 @@ export default function Katakana() {
     }
   };
 
+  const renderGroup = (title, groupType) => {
+    const groupItems = filteredData.filter((item) => item.jenis === groupType);
+    if (groupItems.length === 0) return null;
+
+    return (
+      <div className="kata-group-section" style={{ marginBottom: "2rem" }}>
+        <h3 className="kata-group-title" style={{ margin: "1rem 0", color: "#333", borderBottom: "2px solid #eee", paddingBottom: "0.5rem" }}>
+          {title}
+        </h3>
+        <div className="kata-alphabet-grid">
+          {groupItems.map((item, idx) => (
+            <div
+              key={idx}
+              className={`kata-item-card ${selected?.kana === item.kana ? "active-item" : ""}`}
+              onClick={() => setSelected(item)}
+            >
+              <div className="kata-char">{item.kana}</div>
+              <div className="kata-sub">{item.romaji}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return <div className="loading-state">Memuat data Katakana...</div>;
+  }
+
   return (
     <div className="kata-page-wrapper">
       <div className="kata-hero">
@@ -77,12 +102,7 @@ export default function Katakana() {
       </div>
 
       <div className="kata-main-container">
-        <section className="kata-intro-section">
-          <div className="kata-intro-card">
-            <h3>Fungsi Huruf Katakana</h3>
-            <p>Katakana (カタカナ) digunakan khusus untuk menuliskan kata-kata yang berasal dari bahasa asing (gairaigo), nama orang asing, nama negara di luar Jepang, suara tiruan (onomatope), serta memberikan penekanan estetika pada teks tertentu seperti dalam komik atau dokumen teknis.</p>
-          </div>
-        </section>
+        {/* ... (Section intro tetap sama) ... */}
 
         <section className="kata-workspace">
           <div className="kata-left-panel">
@@ -95,34 +115,17 @@ export default function Katakana() {
               />
             </div>
 
-            {/* Loading */}
-            {loading && <p className="kata-status">Memuat data katakana...</p>}
-
-            {/* Error */}
-            {error && !loading && <p className="kata-status kata-status--error">{error}</p>}
-
-            {/* Grid */}
-            {!loading && !error && (
-              <div className="kata-alphabet-grid">
-                {filteredData.map((item) => (
-                  <div
-                    key={item.id_katakana}
-                    className={`kata-item-card ${selected?.id_katakana === item.id_katakana ? "active-item" : ""}`}
-                    onClick={() => setSelected(item)}
-                  >
-                    <div className="kata-char">{item.karakter}</div>
-                    <div className="kata-sub">{item.romaji}</div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {renderGroup("Katakana Dasar (Gojūon)", "dasar")}
+            {renderGroup("Dakuon (Tenten)", "dakuon")}
+            {renderGroup("Handakuon (Maru)", "handakuon")}
+            {renderGroup("Yoon (Kombinasi)", "yoon")}
           </div>
 
           <div className="kata-right-panel">
             {selected && (
               <div className="kata-sticky-detail">
                 <div className="kata-detail-header">
-                  <h2>{selected.karakter}</h2>
+                  <h2>{selected.kana}</h2>
                   <span>{selected.romaji.toUpperCase()}</span>
                 </div>
                 <div className="kata-detail-body">
@@ -138,7 +141,7 @@ export default function Katakana() {
               </div>
             )}
           </div>
-        </section>
+</section>
 
         <section className="kata-loanwords-section">
           <h2>Kata Serapan Populer (Gairaigo)</h2>

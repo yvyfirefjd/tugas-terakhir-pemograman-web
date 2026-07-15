@@ -1,0 +1,214 @@
+/* ===========================
+   JLPT PAGE
+=========================== */
+
+.jlpt-page{
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#333;
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.hero-jlpt{
+    text-align:center;
+    margin-bottom:60px;
+}
+
+.hero-jlpt h1{
+    font-size:42px;
+    color:#e53935;
+    margin-bottom:20px;
+}
+
+.hero-jlpt p{
+    font-size:18px;
+    line-height:1.8;
+    color:#666;
+    max-width:850px;
+    margin:auto;
+}
+
+/* ===========================
+   LEVEL CARD
+=========================== */
+
+.timeline{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+    margin-bottom:60px;
+}
+
+.level-card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    transition:.3s;
+    position:relative;
+}
+
+.level-card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 15px 30px rgba(0,0,0,.15);
+}
+
+.badge{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.level-card h2{
+    margin-bottom:15px;
+}
+
+.level-card p{
+    line-height:1.7;
+    color:#555;
+}
+
+/* ===========================
+   WARNA LEVEL
+=========================== */
+
+.n5 .badge{
+    background:#43a047;
+}
+
+.n4 .badge{
+    background:#1e88e5;
+}
+
+.n3 .badge{
+    background:#fb8c00;
+}
+
+.n2 .badge{
+    background:#8e24aa;
+}
+
+.n1 .badge{
+    background:#d32f2f;
+}
+
+/* ===========================
+   TABLE
+=========================== */
+
+.table-section{
+    margin-top:20px;
+}
+
+.table-section h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#222;
+}
+
+.table-section table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+.table-section th{
+    background:#e53935;
+    color:white;
+}
+
+.table-section th,
+.table-section td{
+    padding:15px;
+    border:1px solid #eee;
+    text-align:center;
+}
+
+.table-section tbody tr:nth-child(even){
+    background:#fafafa;
+}
+
+.table-section tbody tr:hover{
+    background:#fff5f5;
+}
+
+/* ===========================
+   TIPS
+=========================== */
+
+.tips{
+    margin-top:70px;
+}
+
+.tips h2{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.tips-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:20px;
+}
+
+.tips-card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.tips-card:hover{
+    background:#e53935;
+    color:white;
+    transform:scale(1.03);
+}
+
+.tips-card h3{
+    margin-bottom:10px;
+}
+
+.tips-card p{
+    line-height:1.6;
+}
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+
+@media(max-width:768px){
+
+.hero-jlpt h1{
+    font-size:32px;
+}
+
+.hero-jlpt p{
+    font-size:16px;
+}
+
+.table-section{
+    overflow-x:auto;
+}
+
+.table-section table{
+    min-width:700px;
+}
+
+}

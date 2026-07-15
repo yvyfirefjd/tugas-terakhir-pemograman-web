@@ -1,0 +1,94 @@
+.keuntungan-page{
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.hero{
+    text-align:center;
+    margin-bottom:50px;
+}
+
+.hero h1{
+    font-size:42px;
+    color:#c62828;
+    margin-bottom:15px;
+}
+
+.hero p{
+    color:#555;
+    line-height:1.8;
+    font-size:18px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:#fff;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card h2{
+    color:#d32f2f;
+    margin-bottom:10px;
+}
+
+.card p{
+    line-height:1.7;
+    color:#555;
+}
+
+.statistik{
+    margin-top:60px;
+}
+
+.statistik h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    background:#c62828;
+    color:white;
+}
+
+table td,
+table th{
+    border:1px solid #ddd;
+    padding:14px;
+}
+
+table tr:nth-child(even){
+    background:#fafafa;
+}
+
+.quote{
+    margin-top:50px;
+    background:#ffeaea;
+    padding:30px;
+    border-left:6px solid #c62828;
+    border-radius:10px;
+}
+
+blockquote{
+    font-size:22px;
+    font-style:italic;
+    color:#444;
+}
