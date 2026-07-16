@@ -6,7 +6,7 @@ import "../styles/about.css";
 import fotoA     from "../assets/wafa.jpg";
 import fotoB     from "../assets/mario.jpeg";
 import fotoC     from "../assets/rozi.jpeg";
-import fotoD     from "../assets/blank foto.jpg";
+import fotoD     from "../assets/Reifan.jpeg";
 import fotoE     from "../assets/depran.jpeg";
 
 const About = () => {
